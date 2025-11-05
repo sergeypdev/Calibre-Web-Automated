@@ -42,7 +42,7 @@ from .services import SyncToken as SyncToken, hardcover
 from .web import download_required
 from .kobo_auth import requires_kobo_auth, get_auth_token
 
-KOBO_FORMATS = {"KEPUB": ["KEPUB"], "EPUB": ["EPUB3", "EPUB"]}
+KOBO_FORMATS = {"KEPUB": ["KEPUB"], "EPUB": ["EPUB3", "EPUB"], "CBZ": ["CBZ"]}
 KOBO_STOREAPI_URL = "https://storeapi.kobo.com"
 KOBO_IMAGEHOST_URL = "https://cdn.kobo.com/book-images"
 
@@ -150,9 +150,9 @@ def HandleSyncRequest():
 
     new_archived_last_modified = datetime.min
     sync_results = []
-    
+
     calibre_db.reconnect_db(config, ub.app_DB_path)
-    
+
 
     # Two-Way-Sync Deletion Logic
     if current_user.kobo_only_shelves_sync:
@@ -473,7 +473,7 @@ def get_metadata(book):
         for kobo_format in KOBO_FORMATS[book_data.format]:
             # log.debug('Id: %s, Format: %s' % (book.id, kobo_format))
             try:
-                if get_epub_layout(book, book_data) == 'pre-paginated':
+                if kobo_format in ['EPUB', 'KEPUB'] and get_epub_layout(book, book_data) == 'pre-paginated':
                     kobo_format = 'EPUB3FL'
                 download_urls.append(
                     {
